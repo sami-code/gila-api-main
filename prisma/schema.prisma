@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  name       String
+  phone      String
+  createdAt  DateTime     @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime     @updatedAt @db.Timestamptz(3)
+  subscribed Category[]
+  types      Type[]
+  logs       LogHistory[]
+}
+
+model LogHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  message   String
+  type      Type
+  category  Category
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+enum Type {
+  SMS
+  EMAIL
+  NOTIFICATION
+}
+
+enum Category {
+  SPORTS
+  FINANCE
+  MOVIES
+}
